@@ -26,7 +26,7 @@ public class ProductTest {
     public void getCostForOne(){
         Product productForTest = new Product("Test", 1.25f, 3, 3f);
 
-        float expected = productForTest.getCostForOne();
+        double expected = productForTest.getCostForOne();
 
         float actual = 1.25f;
 
@@ -37,9 +37,9 @@ public class ProductTest {
     public void getSpecialOfferAmount(){
         Product productForTest = new Product("Test", 1.25f, 3, 3f);
 
-        int expected = productForTest.getSpecialOfferAmount();
+        long expected = productForTest.getSpecialOfferAmount();
 
-        int actual = 3;
+        long actual = 3;
 
         Assert.assertEquals(expected, actual);
     }
@@ -48,9 +48,9 @@ public class ProductTest {
     public void getSpecialOfferPrice(){
         Product productForTest = new Product("Test", 1.25f, 3, 3f);
 
-        float expected = productForTest.getSpecialOfferPrice();
+        double expected = productForTest.getSpecialOfferPrice();
 
-        float actual = 3f;
+        double actual = 3f;
 
         Assert.assertEquals(expected, actual, 0);
     }

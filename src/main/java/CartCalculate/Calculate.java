@@ -1,7 +1,8 @@
 package CartCalculate;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Calculate {
     private final Database database;
@@ -10,44 +11,31 @@ public class Calculate {
         this.database = database;
     }
 
-    public float calculateCartCost(String cart) {
-        String cartToCalculate = cart.trim().toUpperCase();
-        char[] productsInCart = cartToCalculate.toCharArray();
-        float cartCost = 0f;
+    public double calculateCartCost(String cart) {
+        String clearedCart = clearCart(cart);
 
-        LinkedList<Product> productsInDB = database.getProducts();
-
-        HashMap<String, Integer> amountTypeOfProductsInCart = new HashMap<>();
-
-        for (char c : productsInCart) {
-            String temp = String.valueOf(c);
-            for (Product product : productsInDB) {
-                if (temp.equals(product.getName())) {
-                    amountTypeOfProductsInCart.putIfAbsent(product.getName(), 0);
-                }
-            }
+        if (clearedCart!=null && !clearedCart.isEmpty()) {
+            Map<String, Long> amountOfProducts = Arrays.stream(clearedCart.split(""))
+                    .map(database::getProduct)
+                    .collect(Collectors.groupingBy(Product::getName,
+                            Collectors.mapping(Product::getName, Collectors.counting())));
+            return amountOfProducts.entrySet().stream()
+                    .mapToDouble(p -> database.getProduct(p.getKey()).getPrice(p.getValue()))
+                    .sum();
+        } else {
+            throw new RuntimeException("Enter the correct cart");
         }
+    }
 
-        for (char product:productsInCart) {
-            if (amountTypeOfProductsInCart.containsKey(String.valueOf(product))){
-                int temp = amountTypeOfProductsInCart.get(String.valueOf(product));
-                amountTypeOfProductsInCart.replace(String.valueOf(product), temp+1);
-            }
+    private String clearCart(String cart) {
+        if (cart!=null) {
+            return Arrays.stream(cart.toUpperCase()
+                            .split(""))
+                    .filter(database::isContainProduct)
+                    .collect(Collectors.joining());
+
+        } else {
+            throw new RuntimeException("Enter the correct data");
         }
-
-        for (Product product:productsInDB) {
-            int specialOfferAmount = product.getSpecialOfferAmount();
-            int amountOfProductInCart = amountTypeOfProductsInCart.get(product.getName());
-            float specialOfferPrice = product.getSpecialOfferPrice();
-            float costForOne = product.getCostForOne();
-
-            if (amountOfProductInCart == specialOfferAmount){
-                cartCost += specialOfferPrice;
-            }else{
-                cartCost += amountOfProductInCart * costForOne;
-            }
-        }
-
-        return cartCost;
     }
 }

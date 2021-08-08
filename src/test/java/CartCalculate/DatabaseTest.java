@@ -3,20 +3,20 @@ package CartCalculate;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.LinkedList;
-
 public class DatabaseTest {
     @Test
     public void addProduct_getProducts(){
         Database database = new Database();
-        Product productForTest = new Product("Test", 1.25f, 3, 3f);
-        database.add(productForTest);
 
-        LinkedList<Product> expected = database.getProducts();
+        database.add(new Product("Test", 1.25d, 3L, 3d));
 
-        LinkedList<Product> actual = new LinkedList<>();
-        actual.add(productForTest);
+        Product expected = new Product();
 
+        if (database.isContainProduct("Test")) {
+            expected = database.getProduct("Test");
+        }
+
+        Product actual = new Product("Test", 1.25d, 3L, 3d);
         Assert.assertEquals(expected, actual);
     }
 }
